@@ -3,8 +3,16 @@
 // Include SEBELUM sync.js di index.html dan customer.html
 // ================================================================
 window.WARUNG_CONFIG = {
-    API_PORT: 5500,
     get API_BASE() {
-        return `${location.protocol}//${location.hostname}:${this.API_PORT}/api`;
+        // Di Railway/production: pakai origin yang sama (tanpa port)
+        // Di localhost: pakai port 5500
+        const isLocalhost = location.hostname === 'localhost' 
+            || location.hostname === '127.0.0.1'
+            || location.hostname.match(/^192\.168\./);
+        
+        if (isLocalhost) {
+            return `${location.protocol}//${location.hostname}:5500/api`;
+        }
+        return `${location.origin}/api`;
     }
 };

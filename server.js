@@ -84,7 +84,8 @@ const server = http.createServer(async (req, res) => {
 
         const { error } = await supabase
         .from(key)
-        .upsert({ id: 1, data: body.data, updated_at: new Date().toISOString() });
+        .update({ data: body.data, updated_at: new Date().toISOString() })
+        .gte('id', 1);
 
         if (error) return sendJSON(res, 500, { ok: false, error: error.message });
         return sendJSON(res, 200, { ok: true });

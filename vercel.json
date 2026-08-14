@@ -1,9 +1,12 @@
 {
-  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/api/:key",
       "destination": "/api/[key].js"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/$1"
     }
   ],
   "headers": [

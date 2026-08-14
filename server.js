@@ -75,22 +75,18 @@ const server = http.createServer(async (req, res) => {
 
     // POST /api/:key
     if (method === 'POST' && pathname.startsWith('/api/')) {
-        const key  = pathname.slice(5);
+        const key = pathname.slice(5);
         if (!ALLOWED_KEYS.has(key)) return sendJSON(res, 400, { ok: false, error: 'Invalid key' });
-
         const body = await readBody(req);
-
-        const { error } = await supabase
-        .from(key)
-        .update({ data: body.data, updated_at: new Date().toISOString() })
-        .gte('id', 1);
-
-        if (error) return sendJSON(res, 500, { ok: false, error: error.message });
+        const result = await supabase
+            .from(key)
+            .update({ data: body.data, updated_at: new Date().toISOString() })
+            .gte('id', 1);
+        if (result.error) {
+            console.error('[supabase error]', result.error.message);
+            return sendJSON(res, 500, { ok: false, error: result.error.message });
+        }
         return sendJSON(res, 200, { ok: true });
-    }
-    if (error) {
-    console.error('[supabase error]', error.message, error.details, error.hint);
-    return sendJSON(res, 500, { ok: false, error: error.message });
     }
 
     // Static files

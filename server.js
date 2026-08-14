@@ -73,20 +73,61 @@ const server = http.createServer(async (req, res) => {
         return sendJSON(res, 200, { ok: true, data: data.data });
     }
 
-    // POST /api/:key
+        // POST /api/:key
     if (method === 'POST' && pathname.startsWith('/api/')) {
         const key = pathname.slice(5);
-        if (!ALLOWED_KEYS.has(key)) return sendJSON(res, 400, { ok: false, error: 'Invalid key' });
-        const body = await readBody(req);
-        const result = await supabase
-            .from(key)
-            .update({ data: body.data, updated_at: new Date().toISOString() })
-            .gte('id', 1);
-        if (result.error) {
-            console.error('[supabase error]', result.error.message);
-            return sendJSON(res, 500, { ok: false, error: result.error.message });
+        if (!ALLOWED_KEYS.has(key)) {
+            return sendJSON(res, 400, { ok: false, error: 'Invalid key' });
         }
-        return sendJSON(res, 200, { ok: true });
+
+        try {
+            const body = await readBody(req);
+            const payload = (body && Object.prototype.hasOwnProperty.call(body, 'data'))
+                ? body.data
+                : body;
+
+            // Ambil 1 row pertama (id GENERATED ALWAYS — jangan di-set manual)
+            const { data: existing, error: fetchErr } = await supabase
+                .from(key)
+                .select('id, data, updated_at')
+                .order('id', { ascending: true })
+                .limit(1)
+                .maybeSingle();
+
+            if (fetchErr) {
+                console.error('[POST fetch]', key, fetchErr.message);
+                return sendJSON(res, 500, { ok: false, error: fetchErr.message });
+            }
+
+            if (!existing || existing.id == null) {
+                console.error('[POST] tabel kosong:', key);
+                return sendJSON(res, 500, {
+                    ok: false,
+                    error: `Tabel ${key} belum punya row. Insert 1 baris manual di Supabase.`,
+                });
+            }
+
+            const now = new Date().toISOString();
+            const { data: updated, error: updateErr } = await supabase
+                .from(key)
+                .update({ data: payload, updated_at: now })
+                .eq('id', existing.id)
+                .select('id, data, updated_at')
+                .maybeSingle();
+
+            if (updateErr) {
+                console.error('[POST update]', key, updateErr.message);
+                return sendJSON(res, 500, { ok: false, error: updateErr.message });
+            }
+
+            return sendJSON(res, 200, {
+                ok: true,
+                data: (updated && updated.data !== undefined) ? updated.data : payload,
+            });
+        } catch (err) {
+            console.error('[POST] unexpected', key, err);
+            return sendJSON(res, 500, { ok: false, error: err.message || 'Server error' });
+        }
     }
 
     // Static files

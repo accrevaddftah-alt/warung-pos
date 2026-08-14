@@ -89,6 +89,10 @@ const server = http.createServer(async (req, res) => {
         if (error) return sendJSON(res, 500, { ok: false, error: error.message });
         return sendJSON(res, 200, { ok: true });
     }
+    if (error) {
+    console.error('[supabase error]', error.message, error.details, error.hint);
+    return sendJSON(res, 500, { ok: false, error: error.message });
+    }
 
     // Static files
     let filePath = path.join(__dirname, pathname === '/' ? 'index.html' : pathname);

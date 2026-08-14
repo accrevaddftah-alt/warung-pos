@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS Warung Sembako</title>
+    <link rel="stylesheet" href="style.css?v=dashfix7">
+    
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Material Symbols Outlined -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<script src="config.js"></script>
+<script src="utils.js"></script>
+<script src="sync.js"></script>
+</head>
+<body>
+    
+    <!-- Sidebar Menu -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Menu Warung</h3>
+            <span class="material-symbols-outlined close-btn" id="closeSidebar">close</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#" id="menuDashboard" class="active"><span class="material-symbols-outlined">home</span> Dashboard</a></li>
+            <li><a href="#" id="menuProdukList"><span class="material-symbols-outlined">inventory_2</span> Produk</a></li>
+            <li><a href="#" id="menuRiwayat"><span class="material-symbols-outlined">history</span> Riwayat</a></li>
+            <li><a href="#" id="menuLaporan"><span class="material-symbols-outlined">analytics</span> Laporan</a></li>
+            <li><a href="#" id="menuPesanan"><span class="material-symbols-outlined">receipt_long</span> Pesanan Masuk<span class="sidebar-order-badge is-hidden" id="orderNotifBadge">0</span></a></li>
+            <li><a href="#" id="menuArsip"><span class="material-symbols-outlined">inventory_2</span> Arsip Pesanan<span class="sidebar-order-badge archive-badge is-hidden" id="archiveNotifBadge">0</span></a></li>
+            <li><a href="#" id="menuPengaturan"><span class="material-symbols-outlined">settings</span> Pengaturan</a></li>
+        </ul>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Modal Tambah/Edit Produk -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tambah Produk Baru</h3>
+                <span class="material-symbols-outlined modal-close" id="closeModalBtn">close</span>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="modal-body">
+                    <!-- Nama Produk full width -->
+                    <div class="form-group col-full">
+                        <label>Nama Produk</label>
+                        <input type="text" id="productName" placeholder="Contoh: Minyak Goreng Bimoli 2L" required>
+                    </div>
+                    <!-- Kategori | Satuan -->
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <select id="productCategory">
+                            <option value="Sembako">Sembako</option>
+                            <option value="Minuman">Minuman</option>
+                            <option value="Bumbu">Bumbu</option>
+                            <option value="Cemilan">Cemilan</option>
+                            <option value="Sabun">Sabun</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Satuan</label>
+                        <select id="productUnit">
+                            <option value="Pcs">Pcs</option>
+                            <option value="Kg">Kg</option>
+                            <option value="Liter">Liter</option>
+                            <option value="Pack">Pack</option>
+                            <option value="Dus">Dus</option>
+                        </select>
+                    </div>
+                    <!-- Harga Modal | Harga Jual -->
+                    <div class="form-group">
+                        <label>Harga Modal (Rp)</label>
+                        <input type="text" id="productBuyPrice" placeholder="0" inputmode="numeric" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Harga Jual (Rp)</label>
+                        <input type="text" id="productPrice" placeholder="0" inputmode="numeric" required>
+                    </div>
+                    <!-- Est. Profit full width -->
+                    <div class="form-group col-full">
+                        <label>Estimasi Profit</label>
+                        <div class="profit-display" id="marginInfo">Rp 0 (0%)</div>
+                    </div>
+                    <!-- Stok Awal | Batas Min Stok -->
+                    <div class="form-group">
+                        <label>Stok Awal</label>
+                        <input type="number" id="productStock" placeholder="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Batas Min. Stok (Alert)</label>
+                        <input type="number" id="productMinStock" value="5">
+                    </div>
+                    <!-- Foto full width -->
+                    <div class="form-group col-full">
+                        <label>Foto Produk</label>
+                        <div class="photo-actions">
+                            <label class="btn-photo-file" for="productImgFile">
+                                <span class="material-symbols-outlined">upload</span>
+                                Pilih File
+                            </label>
+                            <input type="file" id="productImgFile" accept="image/*" hidden>
+                            <button type="button" class="btn-photo-camera" id="btnTakePhoto">
+                                <span class="material-symbols-outlined">photo_camera</span>
+                                Ambil Gambar
+                            </button>
+                        </div>
+                        <div class="photo-preview-wrap" id="photoPreviewWrap" style="display:none;">
+                            <img id="photoPreview" alt="Preview foto">
+                            <button type="button" class="photo-preview-clear" id="btnClearPhoto" title="Hapus foto">
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="cancelModalBtn">Batal</button>
+                    <button type="submit" class="btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Kamera Ambil Gambar -->
+    <div class="modal" id="cameraModal">
+        <div class="modal-content camera-modal-content">
+            <div class="modal-header">
+                <h3>Ambil Gambar Produk</h3>
+                <span class="material-symbols-outlined modal-close" id="closeCameraBtn">close</span>
+            </div>
+            <div class="camera-body">
+                <video id="cameraVideo" autoplay playsinline muted></video>
+                <canvas id="cameraCanvas" style="display:none;"></canvas>
+                <p class="camera-hint" id="cameraHint">Izinkan akses kamera jika diminta browser.</p>
+            </div>
+            <div class="modal-footer camera-footer">
+                <button type="button" class="btn-secondary" id="btnCancelCamera">Batal</button>
+                <button type="button" class="btn-primary" id="btnCapturePhoto">
+                    <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;">camera</span>
+                    Ambil Foto
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Alert / Confirm Custom -->
+    <div class="app-alert-overlay" id="appAlertOverlay">
+        <div class="app-alert-box" id="appAlertBox">
+            <div class="app-alert-icon-wrap" id="appAlertIconWrap">
+                <span class="material-symbols-outlined" id="appAlertIcon">info</span>
+            </div>
+            <h3 class="app-alert-title" id="appAlertTitle">Peringatan</h3>
+            <p class="app-alert-message" id="appAlertMessage"></p>
+            <div class="app-alert-actions" id="appAlertActions">
+                <button type="button" class="btn-secondary" id="appAlertCancel" style="display:none;">Batal</button>
+                <button type="button" class="btn-primary" id="appAlertOk">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sukses Pembayaran -->
+    <div class="success-modal" id="successModal">
+        <div class="success-modal-content">
+            <div class="success-check-wrap">
+                <svg class="success-checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="success-checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="success-checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+            <h3 class="success-title">Pembayaran Berhasil!</h3>
+            <div class="success-details" id="successDetails"></div>
+            <button type="button" class="btn-print-receipt" id="btnPrintReceipt">
+                <span class="material-symbols-outlined">receipt_long</span>
+                Cetak Struk
+            </button>
+            <button type="button" class="btn-success-ok" id="btnSuccessOk">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Header Navbar -->
+    <header class="navbar">
+        <div class="nav-left">
+            <span class="menu-btn-wrap">
+                <span class="material-symbols-outlined menu-icon" id="menuBtn">menu</span>
+                <span class="menu-order-badge is-hidden" id="menuOrderBadge">0</span>
+            </span>
+            <div class="logo">
+                <span class="material-symbols-outlined">storefront</span> WARUNG SEMBAKO
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="notif-wrap" id="notifWrap">
+                <button type="button" class="notif-btn" id="notifBtn" title="Notifikasi Restok">
+                    <span class="material-symbols-outlined">notifications</span>
+                    <span class="notif-badge" id="notifBadge" style="display: none;">0</span>
+                </button>
+                <div class="notif-dropdown" id="notifDropdown">
+                    <div class="notif-dropdown-header">
+                        <span>Notifikasi Restok</span>
+                        <span class="notif-count-label" id="notifCountLabel">0 item</span>
+                    </div>
+                    <div class="notif-dropdown-body" id="notifList">
+                        <div class="notif-empty">Stok aman. Tidak ada barang yang perlu direstok.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Konten Utama -->
+    <main class="main-container">
+        
+        <!-- Panel Kiri: Dinamis (Bisa Dashboard POS atau Manajemen Tabel Produk) -->
+        <section class="left-panel" id="mainPanelContent">
+            <!-- Konten default dimuat lewat script.js -->
+        </section>
+
+        <!-- Panel Kanan: Kasir / Checkout (Hanya tampil saat di Dashboard) -->
+        <aside class="right-panel" id="rightPanel">
+            <h2 class="checkout-title">Keranjang</h2>
+            
+            <div class="cart-header">
+                <span class="col-name">Nama</span>
+                <span class="col-qty">Jml</span>
+                <span class="col-price">Harga</span>
+            </div>
+            
+            <div class="cart-items" id="cartItems"></div>
+
+            <!-- Ringkasan Biaya -->
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Diskon (%)</span>
+                    <input type="number" id="discountInput" value="0" min="0" max="100">
+                </div>
+                <div class="summary-row">
+                    <span class="text-gray">Subtotal</span>
+                    <span class="text-gray" id="subTotal">Rp 0</span>
+                </div>
+            </div>
+
+            <div class="total-row">
+                <span class="total-label">Total</span>
+                <span id="totalAmount" class="total-price">Rp 0</span>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-cancel" id="btnCancel">Batalkan</button>
+                <button class="btn-hold" id="btnCash">Tunai</button>
+            </div>
+            <!-- Tombol Bayar dipindah ke Cash Panel sebagai Konfirmasi Bayar -->
+            <div id="payAmount" style="display:none;">Rp 0</div>
+        </aside>
+
+        <!-- Panel Cash / Numpad (muncul di sebelah kanan Checkout saat tombol Cash diklik) -->
+        <aside class="cash-panel" id="cashSection" style="display: none;">
+            <!-- Tombol kembali hanya tampil di mobile -->
+            <div class="cash-panel-close-btn" style="display:none;">
+                <button type="button" id="btnCloseCashPanel" style="background:none;border:none;display:flex;align-items:center;gap:6px;color:#19a16f;font-weight:600;font-size:14px;cursor:pointer;padding:4px 0;">
+                    <span class="material-symbols-outlined" style="font-size:22px;">arrow_back</span> Kembali ke Keranjang
+                </button>
+            </div>
+            <h2 class="cash-panel-title">Pembayaran Tunai</h2>
+
+            <div class="cash-display-row">
+                <div class="cash-received-box">
+                    <span class="cash-label">Uang Diterima</span>
+                    <div class="cash-value" id="cashDisplay">Rp 0</div>
+                    <input type="hidden" id="cashInput" value="">
+                </div>
+                <div class="change-box">
+                    <span class="cash-label">Kembalian</span>
+                    <div class="change-value" id="changeAmount">Rp 0</div>
+                </div>
+            </div>
+
+            <div class="numpad" id="numpad">
+                <button type="button" class="num-btn" data-val="1">1</button>
+                <button type="button" class="num-btn" data-val="2">2</button>
+                <button type="button" class="num-btn" data-val="3">3</button>
+                <button type="button" class="num-btn" data-val="4">4</button>
+                <button type="button" class="num-btn" data-val="5">5</button>
+                <button type="button" class="num-btn" data-val="6">6</button>
+                <button type="button" class="num-btn" data-val="7">7</button>
+                <button type="button" class="num-btn" data-val="8">8</button>
+                <button type="button" class="num-btn" data-val="9">9</button>
+                <button type="button" class="num-btn num-clear" data-val="C">C</button>
+                <button type="button" class="num-btn" data-val="0">0</button>
+                <button type="button" class="num-btn num-back" data-val="⌫">⌫</button>
+            </div>
+            <!-- Tombol konfirmasi bayar di cash panel (mobile-friendly) -->
+            <button type="button" class="btn-pay" id="btnPayFromCash" style="margin-top:10px;">
+                Konfirmasi Bayar (<span id="payAmountCash">Rp 0</span>)
+            </button>
+        </aside>
+        
+    </main>
+
+    <script src="script.js"></script>
+    <script src="orders-patch.js"></script>
+</body>
+</html>

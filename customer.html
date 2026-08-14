@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesan Online — Warung Sembako</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+
+        :root {
+            --green: #19a16f;
+            --green-dark: #138055;
+            --green-light: #eaf5f0;
+            --green-mid: #d0eddf;
+            --red: #dc3545;
+            --orange: #f97316;
+            --gray: #6b7280;
+            --gray-light: #f3f4f6;
+            --border: #e5e7eb;
+            --text: #1f2937;
+            --white: #ffffff;
+        }
+
+        html, body { height: auto; overflow-x: hidden; }
+        body { background: var(--green-light); min-height: 100vh; }
+
+        /* ===== FIXED NAV ===== */
+        .fixed-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+        }
+
+        /* padding-top #pageContent di-set JS sesuai tinggi nav */
+
+        /* ===== HEADER ===== */
+        .header {
+            background: var(--green);
+            color: white;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(25,161,111,.25);
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: .5px;
+        }
+        .header-logo .material-symbols-outlined { font-size: 22px; }
+        .cart-fab {
+            position: relative;
+            background: rgba(255,255,255,.18);
+            border: none;
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .2s;
+        }
+        .cart-fab:hover { background: rgba(255,255,255,.32); }
+        .cart-fab .material-symbols-outlined { font-size: 22px; }
+        .cart-badge {
+            position: absolute;
+            top: 2px; right: 2px;
+            background: var(--red);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border: 2px solid var(--green);
+        }
+
+        /* ===== TABS ===== */
+        .page-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 2px solid var(--border);
+        }
+        .page-tab {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray);
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: color .2s, border-color .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .page-tab .material-symbols-outlined { font-size: 18px; }
+        .page-tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+        /* ===== CATEGORY BAR ===== */
+        .cat-scroll {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            overflow-x: auto;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            scrollbar-width: none;
+        }
+        .cat-scroll::-webkit-scrollbar { display: none; }
+        .cat-chip {
+            flex-shrink: 0;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: white;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .cat-chip.active {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+        }
+
+        .search-wrap {
+            padding: 12px 16px;
+            background: var(--green-light);
+        }
+        .search-inner {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            padding: 0 12px;
+            gap: 8px;
+        }
+        .search-inner .material-symbols-outlined { color: var(--gray); font-size: 20px; }
+        .search-inner input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 10px 0;
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        /* ===== PRODUCT GRID ===== */
+        .product-section { padding: 0 16px 16px; }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 12px 0;
+        }
+        .prod-card {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,.07);
+            cursor: pointer;
+            transition: transform .18s, box-shadow .18s;
+        }
+        .prod-card:active { transform: scale(.97); }
+        .prod-card-img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            background: var(--green-light);
+        }
+        .prod-card-body { padding: 10px; }
+        .prod-card-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.35;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .prod-card-cat {
+            font-size: 10px;
+            color: var(--gray);
+            margin-bottom: 6px;
+        }
+        .prod-card-price {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--green);
+        }
+        .prod-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+        .prod-card-stock {
+            font-size: 10px;
+            color: var(--gray);
+        }
+        .btn-add-cart {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--green);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .btn-add-cart .material-symbols-outlined { font-size: 18px; }
+        .btn-add-cart:hover { background: var(--green-dark); }
+        .btn-add-cart:disabled { background: var(--border); cursor: not-allowed; }
+        .prod-card.out-of-stock .prod-card-img { filter: grayscale(.6) opacity(.7); }
+        .out-of-stock-label {
+            display: none;
+            font-size: 10px;
+            color: var(--red);
+            font-weight: 600;
+        }
+        .prod-card.out-of-stock .out-of-stock-label { display: block; }
+
+        /* In-card qty control */
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .qty-btn {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            border: 1.5px solid var(--green);
+            background: white;
+            color: var(--green);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        .qty-num {
+            min-width: 20px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* ===== CART DRAWER ===== */
+        .cart-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.4);
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s;
+        }
+        .cart-backdrop.open { opacity: 1; pointer-events: all; }
+        .cart-drawer {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            z-index: 201;
+            transform: translateY(100%);
+            transition: transform .3s cubic-bezier(.4,0,.2,1);
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .cart-drawer.open { transform: translateY(0); }
+        .drawer-handle {
+            width: 40px; height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 12px auto 0;
+            flex-shrink: 0;
+        }
+        .drawer-header {
+            padding: 12px 20px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .drawer-title { font-size: 15px; font-weight: 600; color: var(--text); }
+        .drawer-close {
+            background: var(--gray-light);
+            border: none;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+        }
+        .drawer-close .material-symbols-outlined { font-size: 18px; }
+        .drawer-body { overflow-y: auto; flex: 1; padding: 12px 20px; }
+
+        /* Cart items */
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .cart-item:last-child { border-bottom: none; }
+        .cart-item-img {
+            width: 52px; height: 52px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: var(--green-light);
+            flex-shrink: 0;
+        }
+        .cart-item-info { flex: 1; }
+        .cart-item-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+        .cart-item-price { font-size: 12px; color: var(--green); font-weight: 500; margin-top: 3px; }
+        .cart-item-qty {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .cart-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        .cart-empty .material-symbols-outlined { font-size: 48px; opacity: .3; display: block; margin-bottom: 8px; }
+
+        /* Cart footer */
+        .drawer-footer {
+            padding: 14px 20px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+            background: white;
+        }
+        .cart-summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .cart-total-label { font-size: 13px; color: var(--gray); }
+        .cart-total-val { font-size: 16px; font-weight: 700; color: var(--text); }
+        .cart-note-wrap { margin-bottom: 12px; }
+        .cart-note-wrap label { font-size: 12px; color: var(--gray); font-weight: 500; display: block; margin-bottom: 4px; }
+        .cart-note-wrap textarea {
+            width: 100%;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 12px;
+            font-family: 'Poppins', sans-serif;
+            resize: none;
+            outline: none;
+            color: var(--text);
+            transition: border-color .2s;
+        }
+        .cart-note-wrap textarea:focus { border-color: var(--green); }
+        .btn-order {
+            width: 100%;
+            padding: 13px;
+            background: var(--green);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-order .material-symbols-outlined {
+            font-size: 18px;
+            line-height: 1;
+        }
+        .btn-order:hover { background: var(--green-dark); }
+        .btn-order:disabled { background: var(--border); color: var(--gray); cursor: not-allowed; }
+
+        /* ===== ORDER STATUS PAGE ===== */
+        #pageStatus { padding: 16px 16px 16px; }
+        .empty-orders {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+        }
+        .empty-orders .material-symbols-outlined { font-size: 56px; opacity: .3; display: block; margin-bottom: 12px; }
+        .empty-orders p { font-size: 14px; }
+
+        .order-card {
+            background: white;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,.07);
+        }
+        .order-card-head {
+            padding: 12px 16px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            gap: 8px;
+        }
+        .order-id { font-size: 11px; color: var(--gray); }
+        .order-date { font-size: 11px; color: var(--gray); }
+        .order-body { padding: 12px 16px; }
+        .order-items-summary { font-size: 12px; color: var(--text); margin-bottom: 8px; line-height: 1.5; }
+        .order-total-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+        .order-total-label { font-size: 12px; color: var(--gray); }
+        .order-total-val { font-size: 14px; font-weight: 700; color: var(--green); }
+
+        /* Progress stepper */
+        .order-progress {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px 6px;
+            gap: 0;
+        }
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+        .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+        .progress-step.done:not(:last-child)::after { background: var(--green); }
+        .step-dot {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            transition: background .3s;
+        }
+        .step-dot .material-symbols-outlined { font-size: 14px; color: white; }
+        .progress-step.done .step-dot { background: var(--green); }
+        .progress-step.active .step-dot {
+            background: var(--orange);
+            box-shadow: 0 0 0 4px rgba(249,115,22,.2);
+        }
+        .step-label {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--gray);
+            margin-top: 4px;
+            text-align: center;
+            line-height: 1.2;
+        }
+        .progress-step.done .step-label { color: var(--green); }
+        .progress-step.active .step-label { color: var(--orange); }
+
+        /* Status badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+        .status-badge.pending { background: #fef3c7; color: #d97706; }
+        .status-badge.processing { background: #dbeafe; color: #2563eb; }
+        .status-badge.ready { background: #d1fae5; color: #059669; }
+        .status-badge.done { background: var(--green-mid); color: var(--green-dark); }
+        .status-badge.cancelled { background: #fee2e2; color: var(--red); }
+
+        /* note card in order */
+        .order-note {
+            font-size: 11px;
+            color: var(--gray);
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        /* ===== BOTTOM NAV ===== */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: white;
+            border-top: 1px solid var(--border);
+            display: flex;
+            z-index: 100;
+        }
+        .bottom-nav-btn {
+            flex: 1;
+            padding: 10px 0 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--gray);
+            font-size: 10px;
+            font-weight: 500;
+            transition: color .2s;
+            position: relative;
+        }
+        .bottom-nav-btn .material-symbols-outlined { font-size: 22px; }
+        .bottom-nav-btn.active { color: var(--green); }
+        .bottom-nav-btn .nav-badge {
+            position: absolute;
+            top: 6px;
+            right: calc(50% - 16px);
+            background: var(--red);
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== SUCCESS OVERLAY ===== */
+        .success-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.45);
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s;
+        }
+        .success-overlay.show { opacity: 1; pointer-events: all; }
+        .success-box {
+            background: white;
+            border-radius: 20px;
+            padding: 28px 24px 24px;
+            text-align: center;
+            max-width: 320px;
+            width: 88%;
+            transform: scale(.9);
+            transition: transform .3s;
+            box-shadow: 0 12px 40px rgba(0,0,0,.18);
+        }
+        .success-overlay.show .success-box { transform: scale(1); }
+        .success-icon {
+            width: 68px; height: 68px;
+            background: var(--green-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .success-icon .material-symbols-outlined { font-size: 36px; color: var(--green); }
+        .success-box h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+        .success-box p { font-size: 13px; color: var(--gray); line-height: 1.6; margin-bottom: 20px; }
+        .btn-success-ok {
+            width: 100%;
+            padding: 12px;
+            background: var(--green);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: background .2s;
+        }
+        .btn-success-ok:hover { background: var(--green-dark); }
+
+        /* Empty state */
+        .no-products {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--gray);
+            width: 100%;
+        }
+        .no-products .material-symbols-outlined { font-size: 48px; opacity: .3; display: block; margin-bottom: 8px; }
+
+        /* ===== ORDER ITEMS di halaman Pesanan Saya ===== */
+        .o-items-wrap {
+            padding: 0 16px;
+            border-top: 1px solid var(--border);
+        }
+        .o-item-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f9fafb;
+        }
+        .o-item-row:last-child { border-bottom: none; }
+        .o-item-img {
+            width: 44px; height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: var(--green-light);
+            flex-shrink: 0;
+        }
+        .o-item-info { flex: 1; }
+        .o-item-name { font-size: 12px; font-weight: 600; color: var(--text); display: block; }
+        .o-item-sub  { font-size: 11px; color: var(--gray); }
+        .o-item-total { font-size: 12px; font-weight: 700; color: var(--green); }
+        .order-note {
+            margin: 6px 16px;
+            font-size: 11px;
+            color: var(--gray);
+            font-style: italic;
+            background: #f9fafb;
+            border-radius: 6px;
+            padding: 6px 10px;
+        }
+        /* Status badge override dengan warna dinamis */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        /* ===== CUSTOM CONFIRM MODAL ===== */
+        .cust-confirm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.45);
+            z-index: 5000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: custConfirmFade 0.18s ease;
+        }
+        .cust-confirm-overlay.show {
+            display: flex;
+        }
+        @keyframes custConfirmFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .cust-confirm-box {
+            background: #fff;
+            border-radius: 18px;
+            padding: 28px 22px 20px;
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(0,0,0,.2);
+            animation: custConfirmPop 0.22s ease;
+        }
+        @keyframes custConfirmPop {
+            from { opacity: 0; transform: scale(0.92) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .cust-confirm-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+        }
+        .cust-confirm-icon .material-symbols-outlined {
+            font-size: 34px;
+        }
+        .cust-confirm-icon.warning {
+            background: #fff7ed;
+            color: #d97706;
+        }
+        .cust-confirm-icon.danger {
+            background: #fde8ea;
+            color: #dc3545;
+        }
+        .cust-confirm-icon.info {
+            background: #eaf5f0;
+            color: #19a16f;
+        }
+        .cust-confirm-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0 0 8px 0;
+        }
+        .cust-confirm-msg {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.5;
+            margin: 0 0 22px 0;
+        }
+        .cust-confirm-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .cust-confirm-actions button {
+            flex: 1;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            border: none;
+            transition: background 0.2s, opacity 0.15s;
+        }
+        .cust-confirm-cancel {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+        .cust-confirm-cancel:hover { background: #e5e7eb; }
+        .cust-confirm-ok {
+            background: #19a16f;
+            color: #fff;
+        }
+        .cust-confirm-ok:hover { background: #138055; }
+        .cust-confirm-ok.danger {
+            background: #dc3545;
+        }
+        .cust-confirm-ok.danger:hover { background: #c82333; }
+        .cust-confirm-ok.warning {
+            background: #d97706;
+        }
+        .cust-confirm-ok.warning:hover { background: #b45309; }
+
+        /* ===== Utility / cleaned from inline styles ===== */
+        .header-actions { display: flex; align-items: center; gap: 8px; }
+        .cart-fab { position: relative; }
+        .cart-badge.is-hidden,
+        .nav-badge.is-hidden,
+        .page-panel.is-hidden { display: none !important; }
+        .cart-badge.badge-danger { background: #dc3545; }
+        .page-panel { display: none; }
+        .page-panel.is-visible { display: block; }
+        /* Search & kategori: sembunyikan dengan height bukan display:none agar sticky tetap jalan */
+        #shopControls.is-hidden, #catBar.is-hidden { display: none !important; }
+        #shopControls.is-visible, #catBar.is-visible { display: flex; }
+        #pageArchive.page-panel.is-visible {
+            display: block;
+            padding: 16px 16px 80px;
+        }
+        .buyer-name-field {
+            width: 100%;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            color: var(--text);
+        }
+        .buyer-name-field:focus { border-color: var(--green); }
+        .icon-inline { font-size: 16px; vertical-align: middle; }
+        .empty-orders-loading { padding: 40px 20px; }
+        .empty-orders-loading .material-symbols-outlined {
+            font-size: 36px; opacity: .3; display: block; margin-bottom: 8px;
+        }
+        .empty-orders-loading p { font-size: 13px; }
+        .order-cancelled-inline {
+            display: flex; align-items: center; gap: 6px;
+            padding: 10px 16px 12px; font-size: 12px; color: var(--red); font-weight: 500;
+        }
+        .order-cancelled-inline .material-symbols-outlined { font-size: 14px; }
+        .buyer-chip {
+            display: inline-flex; align-items: center; gap: 3px;
+            font-size: 11px; color: var(--green); font-weight: 600; margin-top: 3px;
+        }
+        .buyer-chip .material-symbols-outlined { font-size: 13px; }
+        .cust-delete-btn, .cust-archive-btn {
+            margin-top: 8px; width: 100%; padding: 8px; border-radius: 8px;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .cust-delete-btn {
+            border: 1.5px solid #fca5a5; background: #fee2e2; color: #dc3545;
+        }
+        .cust-archive-btn {
+            border: 1.5px solid #fcd34d; background: #fff7ed; color: #d97706;
+        }
+        .cust-delete-btn .material-symbols-outlined,
+        .cust-archive-btn .material-symbols-outlined { font-size: 15px; }
+        .order-date-sub { display: block; font-size: 10px; color: var(--gray); margin-top: 2px; }
+        .status-badge { /* color via --status-color */
+            background: color-mix(in srgb, var(--status-color, #6b7280) 12%, transparent);
+            color: var(--status-color, #6b7280);
+        }
+        .status-badge .material-symbols-outlined { font-size: 11px; }
+        .archive-empty {
+            text-align: center; padding: 60px 20px; color: #9ca3af;
+        }
+        .archive-empty .material-symbols-outlined {
+            font-size: 56px; opacity: .3; display: block; margin-bottom: 12px;
+        }
+        .archive-empty p { font-size: 14px; }
+        .archive-card-head { background: #fafafa; }
+        .archive-id { font-weight: 600; color: #374151; }
+        .archive-meta { font-size: 10px; color: #9ca3af; margin-top: 2px; }
+        .archive-actions { margin-top: 10px; text-align: right; }
+        .btn-delete-archive {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 7px 12px; background: #fee2e2; color: #dc3545;
+            border: 1.5px solid #fca5a5; border-radius: 8px;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+        }
+        .btn-delete-archive .material-symbols-outlined { font-size: 15px; }
+        .prod-empty { grid-column: 1 / -1; }
+        .stock-zero { color: var(--red); font-size: 10px; }
+    </style>
+<script src="config.js"></script>
+<script src="utils.js"></script>
+<script src="sync.js"></script>
+</head>
+<body>
+
+<!-- Fixed Nav -->
+<div class="fixed-nav" id="fixedNav">
+
+<!-- Header -->
+<header class="header">
+    <div class="header-logo">
+        <span class="material-symbols-outlined">storefront</span>
+        <span id="storeName">WARUNG SEMBAKO</span>
+    </div>
+    <div class="header-actions">
+        <button class="cart-fab" id="btnOpenArchive" onclick="showPage('archive')" title="Arsip Pesanan">
+            <span class="material-symbols-outlined">inventory_2</span>
+            <span class="cart-badge badge-danger is-hidden" id="archiveBadge">0</span>
+        </button>
+        <button class="cart-fab" id="btnOpenCart">
+            <span class="material-symbols-outlined">shopping_cart</span>
+            <span class="cart-badge is-hidden" id="cartBadge">0</span>
+        </button>
+    </div>
+</header>
+
+<!-- Page Tabs -->
+<div class="page-tabs">
+    <button class="page-tab" id="tabShop" onclick="showPage('shop')">
+        <span class="material-symbols-outlined">storefront</span> Belanja
+    </button>
+    <button class="page-tab" id="tabStatus" onclick="showPage('status')">
+        <span class="material-symbols-outlined">receipt_long</span> Pesanan Saya
+        <span class="nav-badge is-hidden" id="orderBadge"></span>
+    </button>
+</div>
+
+<!-- Search & Kategori - di luar pageShop agar sticky bekerja -->
+<div class="search-wrap" id="shopControls">
+    <div class="search-inner">
+        <span class="material-symbols-outlined">search</span>
+        <input type="text" id="searchInput" placeholder="Cari produk...">
+    </div>
+</div>
+<div class="cat-scroll" id="catBar">
+    <button class="cat-chip active" data-cat="all">Semua</button>
+    <button class="cat-chip" data-cat="Sembako">Sembako</button>
+    <button class="cat-chip" data-cat="Minuman">Minuman</button>
+    <button class="cat-chip" data-cat="Bumbu">Bumbu</button>
+    <button class="cat-chip" data-cat="Cemilan">Cemilan</button>
+    <button class="cat-chip" data-cat="Sabun">Sabun</button>
+</div>
+
+</div><!-- /fixed-nav -->
+
+<!-- SCROLLABLE CONTENT -->
+<div id="pageContent">
+
+<!-- SHOP PAGE -->
+<div id="pageShop" class="page-panel is-hidden">
+    <div class="product-section">
+        <div class="product-grid" id="productGrid"></div>
+    </div>
+</div>
+
+<!-- STATUS PAGE -->
+<div id="pageStatus" class="page-panel is-hidden">
+    <div id="orderList"></div>
+</div>
+
+<!-- ARCHIVE PAGE -->
+<div id="pageArchive" class="page-panel is-hidden">
+    <div id="archiveList"></div>
+</div>
+
+</div><!-- /pageContent -->
+
+<!-- Restore tab aktif SEBELUM async init (cegah flicker ke Belanja saat refresh) -->
+<script>
+(function () {
+    var page = sessionStorage.getItem('warung_customer_page') || 'shop';
+    var shopEl = document.getElementById('pageShop');
+    var statusEl = document.getElementById('pageStatus');
+    var archiveEl = document.getElementById('pageArchive');
+    var searchEl = document.getElementById('shopControls');
+    var catEl = document.getElementById('catBar');
+    var tabShop = document.getElementById('tabShop');
+    var tabStatus = document.getElementById('tabStatus');
+    function setVis(el, on) {
+        if (!el) return;
+        el.classList.toggle('is-hidden', !on);
+        el.classList.toggle('is-visible', on);
+    }
+    setVis(shopEl, page === 'shop');
+    setVis(statusEl, page === 'status');
+    setVis(archiveEl, page === 'archive');
+    if (searchEl) searchEl.style.display = page === 'shop' ? '' : 'none';
+    if (catEl)    catEl.style.display    = page === 'shop' ? '' : 'none';
+    if (tabShop) tabShop.classList.toggle('active', page === 'shop');
+    if (tabStatus) tabStatus.classList.toggle('active', page === 'status');
+
+    // Set padding-top langsung agar konten tidak tertutup fixed nav
+    (function applyNavOffset() {
+        var nav = document.getElementById('fixedNav');
+        var content = document.getElementById('pageContent');
+        if (nav && content) content.style.paddingTop = nav.offsetHeight + 'px';
+    })();
+})();
+</script>
+
+<!-- Cart Drawer -->
+<div class="cart-backdrop" id="cartBackdrop"></div>
+<div class="cart-drawer" id="cartDrawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-header">
+        <span class="drawer-title">Keranjang Belanja</span>
+        <button class="drawer-close" id="btnCloseCart">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+    <div class="drawer-body" id="cartBody"></div>
+    <div class="drawer-footer">
+        <div class="cart-summary-row">
+            <span class="cart-total-label">Total Belanja</span>
+            <span class="cart-total-val" id="cartTotal">Rp 0</span>
+        </div>
+        <div class="cart-note-wrap">
+            <label>Nama Pembeli</label>
+            <input type="text" id="buyerName" class="buyer-name-field" placeholder="Nama Anda (opsional)" maxlength="40">
+        </div>
+        <div class="cart-note-wrap">
+            <label>Catatan pesanan (opsional)</label>
+            <textarea id="orderNote" rows="2" placeholder="Contoh: Minta plastik kresek ya..."></textarea>
+        </div>
+        <button class="btn-order" id="btnOrder">
+            <span class="material-symbols-outlined">send</span>
+            Kirim Pesanan ke Penjual
+        </button>
+    </div>
+</div>
+
+<!-- Success Overlay -->
+<div class="success-overlay" id="successOverlay">
+    <div class="success-box">
+        <div class="success-icon">
+            <span class="material-symbols-outlined">check_circle</span>
+        </div>
+        <h3>Pesanan Terkirim!</h3>
+        <p>Pesanan kamu sudah diterima oleh penjual. Pantau statusnya di tab <b>Pesanan Saya</b>.</p>
+        <button class="btn-success-ok" id="btnSuccessOk">Lihat Pesanan Saya</button>
+    </div>
+</div>
+
+<!-- Custom Confirm Modal -->
+<div class="cust-confirm-overlay" id="custConfirmOverlay">
+    <div class="cust-confirm-box">
+        <div class="cust-confirm-icon warning" id="custConfirmIconWrap">
+            <span class="material-symbols-outlined" id="custConfirmIcon">help</span>
+        </div>
+        <h3 class="cust-confirm-title" id="custConfirmTitle">Konfirmasi</h3>
+        <p class="cust-confirm-msg" id="custConfirmMsg"></p>
+        <div class="cust-confirm-actions">
+            <button type="button" class="cust-confirm-cancel" id="custConfirmCancel">Batal</button>
+            <button type="button" class="cust-confirm-ok" id="custConfirmOk">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// CUSTOMER.JS — Halaman Pembeli Warung Sembako
+// ============================================================
+
+const DEFAULT_IMG = 'Food.png';
+const ORDERS_KEY = 'warung_customer_orders';
+const PRODUCTS_KEY = 'warung_products';
+const SETTINGS_KEY = 'warung_settings';
+
+// Single source of truth untuk API (dari config.js)
+const API_BASE = (window.WARUNG_CONFIG && window.WARUNG_CONFIG.API_BASE)
+    ? window.WARUNG_CONFIG.API_BASE
+    : `${location.protocol}//${location.hostname}:5500/api`;
+
+const formatRupiah = (window.WarungUtils && window.WarungUtils.formatRupiah)
+    ? window.WarungUtils.formatRupiah
+    : (n => 'Rp ' + Math.floor(Number(n)||0).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.'));
+
+// Shared escape dari utils.js (dimuat sebelum script ini)
+const escapeHtml = window.WarungUtils.escapeHtml;
+
+// ===== CUSTOM CONFIRM (ganti confirm() bawaan browser) =====
+let _custConfirmResolver = null;
+
+const showConfirm = (message, options = {}) => {
+    return new Promise((resolve) => {
+        _custConfirmResolver = resolve;
+        const overlay = document.getElementById('custConfirmOverlay');
+        const iconWrap = document.getElementById('custConfirmIconWrap');
+        const iconEl = document.getElementById('custConfirmIcon');
+        const titleEl = document.getElementById('custConfirmTitle');
+        const msgEl = document.getElementById('custConfirmMsg');
+        const okBtn = document.getElementById('custConfirmOk');
+        const cancelBtn = document.getElementById('custConfirmCancel');
+
+        const type = options.type || 'warning'; // warning | danger | info
+        const icons = { warning: 'help', danger: 'error', info: 'info' };
+
+        iconWrap.className = 'cust-confirm-icon ' + type;
+        iconEl.textContent = options.icon || icons[type] || 'help';
+        titleEl.textContent = options.title || 'Konfirmasi';
+        msgEl.textContent = message;
+        cancelBtn.textContent = options.cancelText || 'Batal';
+        okBtn.textContent = options.okText || 'OK';
+        okBtn.className = 'cust-confirm-ok' + (type === 'danger' ? ' danger' : type === 'warning' ? ' warning' : '');
+
+        okBtn.onclick = () => {
+            overlay.classList.remove('show');
+            if (_custConfirmResolver) { _custConfirmResolver(true); _custConfirmResolver = null; }
+        };
+        cancelBtn.onclick = () => {
+            overlay.classList.remove('show');
+            if (_custConfirmResolver) { _custConfirmResolver(false); _custConfirmResolver = null; }
+        };
+        overlay.onclick = (e) => {
+            if (e.target === overlay) {
+                overlay.classList.remove('show');
+                if (_custConfirmResolver) { _custConfirmResolver(false); _custConfirmResolver = null; }
+            }
+        };
+
+        overlay.classList.add('show');
+    });
+};
+
+let products = [];
+let cart = {};   // { productId: qty }
+let activeCategory = 'all';
+let searchKw = '';
+
+// ===== LOAD DATA =====
+function loadData() {
+    products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+    const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
+    if (settings.name) document.getElementById('storeName').textContent = settings.name.toUpperCase();
+}
+
+// ===== PRODUCT GRID =====
+function getFiltered() {
+    let list = products.filter(p => Number(p.stock) > 0 || true); // show all, mark OOS
+    if (activeCategory !== 'all') {
+        list = list.filter(p => p.category === activeCategory);
+    }
+    if (searchKw) {
+        list = list.filter(p => p.name.toLowerCase().includes(searchKw));
+    }
+    return list;
+}
+
+function renderGrid() {
+    const grid = document.getElementById('productGrid');
+    const list = getFiltered();
+
+    if (list.length === 0) {
+    grid.innerHTML = `<div class="no-products">
+        <span class="material-symbols-outlined">inventory_2</span>
+        <p>Tidak ada produk ditemukan</p>
+    </div>`;
+    return;
+    }
+
+    grid.innerHTML = list.map(p => {
+        const oos = (Number(p.stock) || 0) <= 0;
+        const qty = cart[p.id] || 0;
+        const imgSrc = p.img || DEFAULT_IMG;
+
+        return `<div class="prod-card ${oos ? 'out-of-stock' : ''}">
+            <img class="prod-card-img" src="${imgSrc}" alt="${p.name}" onerror="this.src='${DEFAULT_IMG}'">
+            <div class="prod-card-body">
+                <div class="prod-card-name">${p.name}</div>
+                <div class="prod-card-cat">${p.category || ''} · ${p.unit || 'Pcs'}</div>
+                <div class="prod-card-price">${formatRupiah(p.price)}</div>
+                <div class="prod-card-footer">
+                    <span class="prod-card-stock out-of-stock-label">Habis</span>
+                    ${oos
+                        ? `<span class="prod-card-stock" class="stock-zero">Stok habis</span><button class="btn-add-cart" disabled><span class="material-symbols-outlined">add</span></button>`
+                        : qty > 0
+                            ? `<div class="qty-control">
+                                <button class="qty-btn" onclick="changeQty('${p.id}',-1)">−</button>
+                                <span class="qty-num">${qty}</span>
+                                <button class="qty-btn" onclick="changeQty('${p.id}',1)">+</button>
+                               </div>`
+                            : `<span class="prod-card-stock">Stok: ${p.stock}</span>
+                               <button class="btn-add-cart" onclick="changeQty('${p.id}',1)">
+                                 <span class="material-symbols-outlined">add</span>
+                               </button>`
+                    }
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function changeQty(id, delta) {
+    const p = products.find(p => p.id == id);
+    if (!p) return;
+    const cur = cart[id] || 0;
+    const next = cur + delta;
+    if (next <= 0) { delete cart[id]; }
+    else if (next > Number(p.stock)) { return; }
+    else { cart[id] = next; }
+    renderGrid();
+    updateCartBadge();
+}
+
+function updateCartBadge() {
+    const total = Object.values(cart).reduce((a,b) => a+b, 0);
+    const badge = document.getElementById('cartBadge');
+    badge.textContent = total;
+    badge.classList.toggle('is-hidden', total <= 0);
+}
+
+// ===== CART DRAWER =====
+function openCart() {
+    renderCartDrawer();
+    document.getElementById('cartBackdrop').classList.add('open');
+    document.getElementById('cartDrawer').classList.add('open');
+}
+function closeCart() {
+    document.getElementById('cartBackdrop').classList.remove('open');
+    document.getElementById('cartDrawer').classList.remove('open');
+}
+document.getElementById('btnOpenCart').onclick = openCart;
+document.getElementById('btnCloseCart').onclick = closeCart;
+document.getElementById('cartBackdrop').onclick = closeCart;
+
+function getCartItems() {
+    return Object.entries(cart).map(([id, qty]) => {
+        const p = products.find(p => p.id == id);
+        if (!p) return null;
+        return { ...p, qty };
+    }).filter(Boolean);
+}
+
+function renderCartDrawer() {
+    const body = document.getElementById('cartBody');
+    const items = getCartItems();
+
+    if (items.length === 0) {
+        body.innerHTML = `<div class="cart-empty">
+            <span class="material-symbols-outlined">shopping_cart</span>
+            <p>Keranjang masih kosong.<br>Tambahkan produk dulu ya!</p>
+        </div>`;
+        document.getElementById('btnOrder').disabled = true;
+        document.getElementById('cartTotal').textContent = 'Rp 0';
+        return;
+    }
+
+    document.getElementById('btnOrder').disabled = false;
+    const total = items.reduce((s,i) => s + (i.price * i.qty), 0);
+    document.getElementById('cartTotal').textContent = formatRupiah(total);
+
+    body.innerHTML = items.map(i => `
+        <div class="cart-item">
+            <img class="cart-item-img" src="${i.img || DEFAULT_IMG}" alt="${i.name}" onerror="this.src='${DEFAULT_IMG}'">
+            <div class="cart-item-info">
+                <div class="cart-item-name">${i.name}</div>
+                <div class="cart-item-price">${formatRupiah(i.price)} / ${i.unit || 'Pcs'}</div>
+            </div>
+            <div class="cart-item-qty">
+                <button class="qty-btn" onclick="changeQtyCart('${i.id}',-1)">−</button>
+                <span class="qty-num">${i.qty}</span>
+                <button class="qty-btn" onclick="changeQtyCart('${i.id}',1)">+</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function changeQtyCart(id, delta) {
+    changeQty(id, delta);
+    renderCartDrawer();
+}
+
+// ===== SEND ORDER =====
+let _orderSubmitting = false;
+document.getElementById('btnOrder').onclick = async () => {
+    if (_orderSubmitting) return;
+    const items = getCartItems();
+    if (!items.length) return;
+
+    const btnOrder = document.getElementById('btnOrder');
+    _orderSubmitting = true;
+    if (btnOrder) btnOrder.disabled = true;
+
+    try {
+        const note      = document.getElementById('orderNote').value.trim();
+        const buyerName = (document.getElementById('buyerName').value || '').trim();
+        const total     = items.reduce((s,i) => s + (i.price * i.qty), 0);
+
+        const order = {
+            id: 'ORD-' + Date.now(),
+            date: new Date().toISOString(),
+            items: items.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, unit: i.unit, img: i.img })),
+            total,
+            note,
+            buyerName,
+            status: 'pending'
+        };
+
+        // Ambil daftar terbaru (server dulu) agar tidak menimpa perubahan tab/perangkat lain
+        let orders = [];
+        try {
+            const res = await fetch(`${API_BASE}/${ORDERS_KEY}`, { cache: 'no-store' });
+            if (res.ok) {
+                const json = await res.json();
+                orders = Array.isArray(json.data) ? json.data : [];
+            } else {
+                throw new Error('HTTP ' + res.status);
+            }
+        } catch (e) {
+            try {
+                orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]') || [];
+            } catch (_) {
+                orders = [];
+            }
+        }
+        if (!Array.isArray(orders)) orders = [];
+        if (!orders.some(o => o && o.id === order.id)) {
+            orders.unshift(order);
+        }
+        localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+
+        // Reset cart
+        cart = {};
+        updateCartBadge();
+        renderGrid();
+        closeCart();
+        document.getElementById('orderNote').value = '';
+        document.getElementById('buyerName').value = '';
+
+        // Show success overlay
+        document.getElementById('successOverlay').classList.add('show');
+    } finally {
+        _orderSubmitting = false;
+        // Tombol tetap disabled jika cart kosong (renderCartDrawer mengatur ulang saat dibuka)
+        if (btnOrder && getCartItems().length > 0) btnOrder.disabled = false;
+    }
+};
+
+document.getElementById('btnSuccessOk').onclick = () => {
+    document.getElementById('successOverlay').classList.remove('show');
+    showPage('status');
+};
+
+// ===== ORDERS PAGE =====
+const STATUS_CONFIG = {
+    pending:    { label: 'Menunggu', icon: 'schedule',     color: '#d97706' },
+    processing: { label: 'Diproses', icon: 'autorenew',    color: '#2563eb' },
+    ready:      { label: 'Siap',     icon: 'inventory',    color: '#059669' },
+    done:       { label: 'Selesai',  icon: 'check_circle', color: '#19a16f' },
+    cancelled:  { label: 'Dibatal',  icon: 'cancel',       color: '#dc3545' }
+};
+const STEP_LABELS = ['Dikirim', 'Diproses', 'Siap', 'Selesai'];
+const STEP_ICONS  = ['send', 'autorenew', 'inventory', 'check_circle'];
+const STEP_KEYS   = ['pending', 'processing', 'ready', 'done'];
+
+// Arsip sisi pembeli (didefinisikan di sini agar bisa dipakai di renderOrdersPage)
+const CUST_ARCHIVE_KEY = 'warung_cust_archive';
+const getCustArchive  = () => JSON.parse(localStorage.getItem(CUST_ARCHIVE_KEY)) || [];
+const saveCustArchive = (arr) => localStorage.setItem(CUST_ARCHIVE_KEY, JSON.stringify(arr));
+const updateArchiveBadge = () => {
+    const count = getCustArchive().length;
+    const badge = document.getElementById('archiveBadge');
+    if (badge) { badge.textContent = count; badge.classList.toggle('is-hidden', count <= 0); }
+};
+
+function getStepClass(stepIndex, status) {
+    const cur = STEP_KEYS.indexOf(status);
+    if (cur < 0) return '';
+    if (stepIndex < cur) return 'done';
+    if (stepIndex === cur) return 'active';
+    return '';
+}
+
+async function renderOrdersPage() {
+    const el = document.getElementById('orderList');
+    el.innerHTML = `<div class="empty-orders empty-orders-loading">
+        <span class="material-symbols-outlined">sync</span>
+        <p>Memuat pesanan...</p>
+    </div>`;
+
+    // Selalu fetch langsung dari server untuk data terbaru
+    let orders = [];
+    try {
+        const res  = await fetch(`${API_BASE}/${ORDERS_KEY}`, { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const json = await res.json();
+        orders = json.data || [];
+        // Sinkronkan juga ke localStorage
+        if (orders.length && window._realLS) {
+            window._realLS.setItem(ORDERS_KEY, JSON.stringify(orders));
+        }
+    } catch(e) {
+        console.warn('[customer] fetch orders failed, fallback localStorage:', e.message);
+        orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || [];
+    }
+
+    // Sembunyikan pesanan yang sudah diarsip di sisi pembeli
+    const archivedIds = new Set(getCustArchive().map(a => a.id));
+    orders = orders.filter(o => !archivedIds.has(o.id));
+
+    if (!orders.length) {
+        el.innerHTML = `<div class="empty-orders">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <p>Belum ada pesanan.<br>Yuk belanja dulu!</p>
+        </div>`;
+        return;
+    }
+
+    el.innerHTML = orders.map(o => {
+        const cfg = STATUS_CONFIG[o.status] || STATUS_CONFIG.pending;
+        const dateStr = new Date(o.date).toLocaleString('id-ID', {
+            day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'
+        });
+
+        const stepperHTML = (o.status === 'cancelled')
+            ? `<div class="order-cancelled-inline">
+                 <span class="material-symbols-outlined">cancel</span>
+                 Pesanan dibatalkan
+               </div>`
+            : `<div class="order-progress">
+                ${STEP_LABELS.map((lbl, i) => `
+                    <div class="progress-step ${getStepClass(i, o.status)}">
+                        <div class="step-dot"><span class="material-symbols-outlined">${STEP_ICONS[i]}</span></div>
+                        <div class="step-label">${lbl}</div>
+                    </div>`).join('')}
+               </div>`;
+
+        const itemsHTML = (o.items || []).map(it => `
+            <div class="o-item-row">
+                <img class="o-item-img" src="${it.img || 'Food.png'}" alt="${it.name}" onerror="this.src='Food.png'">
+                <div class="o-item-info">
+                    <span class="o-item-name">${it.name}</span>
+                    <span class="o-item-sub">${it.qty} ${it.unit||'Pcs'} × ${formatRupiah(it.price)}</span>
+                </div>
+                <span class="o-item-total">${formatRupiah(it.price * it.qty)}</span>
+            </div>`).join('');
+
+        const buyerBadge = o.buyerName
+            ? `<span class="buyer-chip">
+                 <span class="material-symbols-outlined">person</span>${escapeHtml(o.buyerName)}
+               </span>`
+            : '';
+
+        const deleteBtn = o.status === 'cancelled'
+            ? `<button class="cust-delete-btn" data-oid="${o.id}">
+                 <span class="material-symbols-outlined">delete</span> Hapus Pesanan Ini
+               </button>`
+            : '';
+
+        // Tombol Arsip untuk pesanan selesai (done)
+        const archiveBtn = o.status === 'done'
+            ? `<button class="cust-archive-btn" data-oid="${o.id}">
+                 <span class="material-symbols-outlined">archive</span> Arsipkan Pesanan
+               </button>`
+            : '';
+
+        return `<div class="order-card" id="custcard-${o.id}">
+            <div class="order-card-head">
+                <div>
+                    <span class="order-id">${o.id}</span>
+                    <span class="order-date order-date-sub">${dateStr}</span>
+                    ${buyerBadge}
+                </div>
+                <span class="status-badge ${o.status}" style="--status-color:${cfg.color}">
+                    <span class="material-symbols-outlined">${cfg.icon}</span>
+                    ${cfg.label}
+                </span>
+            </div>
+            ${stepperHTML}
+            <div class="o-items-wrap">${itemsHTML}</div>
+            ${o.note ? `<div class="order-note">📝 ${escapeHtml(o.note)}</div>` : ''}
+            <div class="order-body">
+                <div class="order-total-row">
+                    <span class="order-total-label">Total</span>
+                    <span class="order-total-val">${formatRupiah(o.total)}</span>
+                </div>
+                ${archiveBtn}
+                ${deleteBtn}
+            </div>
+        </div>`;
+    }).join('');
+
+    // Bind tombol hapus pesanan yang dibatalkan
+    el.querySelectorAll('.cust-delete-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const oid  = btn.dataset.oid;
+            if (!(await showConfirm('Hapus pesanan yang dibatalkan ini dari daftar?', {
+                type: 'danger', title: 'Hapus Pesanan', okText: 'Hapus', cancelText: 'Batal', icon: 'delete'
+            }))) return;
+            try {
+                // Ambil daftar terbaru dulu agar tidak menimpa perubahan lain
+                let orders = [];
+                try {
+                    const res = await fetch(`${API_BASE}/${ORDERS_KEY}`, { cache: 'no-store' });
+                    if (res.ok) {
+                        const json = await res.json();
+                        orders = Array.isArray(json.data) ? json.data : [];
+                    } else {
+                        throw new Error('HTTP ' + res.status);
+                    }
+                } catch (_) {
+                    orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]') || [];
+                }
+                if (!Array.isArray(orders)) orders = [];
+                orders = orders.filter(o => o && o.id !== oid);
+                // localStorage → sync.js proxy → POST dengan If-Match
+                localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+            } catch(e) {
+                console.warn('[customer] delete order failed:', e.message);
+            }
+            renderOrdersPage();
+        });
+    });
+
+    // Bind tombol Arsipkan untuk pesanan selesai (hanya di sisi pembeli)
+    el.querySelectorAll('.cust-archive-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const oid = btn.dataset.oid;
+            if (!(await showConfirm('Arsipkan pesanan ini? Pesanan akan dipindah ke Arsip.', {
+                type: 'warning', title: 'Arsipkan Pesanan', okText: 'Arsipkan', cancelText: 'Batal', icon: 'archive'
+            }))) return;
+
+            let order = null;
+            try {
+                const res  = await fetch(`${API_BASE}/${ORDERS_KEY}`, { cache: 'no-store' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const json = await res.json();
+                order = (json.data || []).find(o => o.id === oid);
+            } catch(e) {
+                console.warn('[customer] archive fetch failed:', e.message);
+                order = (JSON.parse(localStorage.getItem(ORDERS_KEY)) || []).find(o => o.id === oid);
+            }
+            if (!order) return;
+
+            const archive = getCustArchive();
+            if (!archive.some(a => a.id === oid)) {
+                archive.unshift({ ...order, archivedAt: new Date().toISOString() });
+                saveCustArchive(archive);
+            }
+            updateArchiveBadge();
+            renderOrdersPage();
+        });
+    });
+}
+
+// ===== NAVIGATION =====
+function showPage(page) {
+    const shopEl    = document.getElementById('pageShop');
+    const statusEl  = document.getElementById('pageStatus');
+    const archiveEl = document.getElementById('pageArchive');
+    const searchEl  = document.getElementById('shopControls');
+    const catEl     = document.getElementById('catBar');
+    const setVis = (el, on) => {
+        if (!el) return;
+        el.classList.toggle('is-hidden', !on);
+        el.classList.toggle('is-visible', on);
+    };
+    setVis(shopEl,    page === 'shop');
+    setVis(statusEl,  page === 'status');
+    setVis(archiveEl, page === 'archive');
+    if (searchEl) searchEl.style.display = page === 'shop' ? '' : 'none';
+    if (catEl)    catEl.style.display    = page === 'shop' ? '' : 'none';
+    document.getElementById('tabShop').classList.toggle('active',   page === 'shop');
+    document.getElementById('tabStatus').classList.toggle('active', page === 'status');
+    sessionStorage.setItem('warung_customer_page', page);
+    if (page === 'status')  renderOrdersPage().catch(console.error);
+    if (page === 'archive') renderArchivePage();
+}
+
+// ===== ARSIP (CUSTOMER) =====
+function renderArchivePage() {
+    const wrap = document.getElementById('archiveList');
+    const archive = getCustArchive();
+    updateArchiveBadge();
+
+    if (archive.length === 0) {
+        wrap.innerHTML = `<div class="archive-empty">
+            <span class="material-symbols-outlined">inventory_2</span>
+            <p>Belum ada pesanan yang diarsip.</p>
+        </div>`;
+        return;
+    }
+
+    wrap.innerHTML = archive.map(o => {
+        const statusMap = { pending:'Menunggu', processing:'Diproses', ready:'Siap', done:'Selesai', cancelled:'Dibatalkan' };
+        const colorMap  = { pending:'#d97706', processing:'#2563eb', ready:'#059669', done:'#19a16f', cancelled:'#dc3545' };
+        const statusLabel = statusMap[o.status] || o.status;
+        const statusColor = colorMap[o.status]  || '#6b7280';
+        const itemsSummary = (o.items||[]).map(it => `${it.name} ×${it.qty}`).join(', ');
+        const archivedDate = o.archivedAt
+            ? new Date(o.archivedAt).toLocaleString('id-ID', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+            : '-';
+        const total = (o.items||[]).reduce((s,it) => s + it.price * it.qty, 0);
+
+        return `<div class="order-card">
+            <div class="order-card-head archive-card-head">
+                <div>
+                    <div class="order-id archive-id">${o.id}</div>
+                    <div class="order-date">${new Date(o.date).toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+                    <div class="archive-meta">📦 Diarsip: ${archivedDate}</div>
+                </div>
+                <span class="status-badge" style="--status-color:${statusColor}">${statusLabel}</span>
+            </div>
+            <div class="order-body">
+                <div class="order-items-summary">${itemsSummary}</div>
+                <div class="order-total-row">
+                    <span class="order-total-label">Total</span>
+                    <span class="order-total-val">${'Rp ' + total.toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.')}</span>
+                </div>
+                <div class="archive-actions">
+                    <button type="button" class="btn-delete-archive" onclick="deleteArchiveItem('${o.id}')">
+                        <span class="material-symbols-outlined">delete</span> Hapus Arsip
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+window.deleteArchiveItem = async (id) => {
+    if (!(await showConfirm('Hapus arsip ini permanen?', {
+        type: 'danger', title: 'Hapus Arsip', okText: 'Hapus', cancelText: 'Batal', icon: 'delete'
+    }))) return;
+    saveCustArchive(getCustArchive().filter(o => o.id !== id));
+    updateArchiveBadge();
+    renderArchivePage();
+};
+
+// ===== CATEGORY FILTER =====
+document.querySelectorAll('.cat-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.cat-chip').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCategory = btn.dataset.cat;
+        renderGrid();
+    });
+});
+
+// ===== SEARCH =====
+document.getElementById('searchInput').addEventListener('input', e => {
+    searchKw = e.target.value.toLowerCase().trim();
+    renderGrid();
+});
+
+// ===== LISTEN FOR STATUS UPDATES FROM SELLER PAGE =====
+function refreshOrderBadgeFromOrders(orders) {
+    const pending = (orders || []).filter(o => o.status !== 'done' && o.status !== 'cancelled').length;
+    const badge = document.getElementById('orderBadge');
+    if (badge) {
+        badge.textContent = pending;
+        badge.classList.toggle('is-hidden', pending <= 0);
+    }
+    const pageStatus = document.getElementById('pageStatus');
+    if (pageStatus && !pageStatus.classList.contains('is-hidden')) {
+        renderOrdersPage().catch(err => console.warn('[customer] refresh orders failed', err));
+    }
+}
+
+window.addEventListener('warung-data-changed', (e) => {
+    if (e.detail && e.detail.key === ORDERS_KEY) {
+        refreshOrderBadgeFromOrders(e.detail.data || []);
+    }
+});
+
+window.addEventListener('storage', e => {
+    if (e.key === ORDERS_KEY) {
+        const orders = JSON.parse(e.newValue || '[]') || [];
+        refreshOrderBadgeFromOrders(orders);
+    }
+});
+
+// ===== INIT =====
+(async () => {
+    if (window.__syncReady) {
+        try { await window.__syncReady; } catch(e) {}
+    }
+    loadData();
+    renderGrid();
+    updateArchiveBadge();
+    const lastPage = sessionStorage.getItem('warung_customer_page') || 'shop';
+    showPage(lastPage);
+})();
+
+// ===== FIXED NAV HEIGHT → PADDING CONTENT =====
+function updateNavOffset() {
+    const nav = document.getElementById('fixedNav');
+    const content = document.getElementById('pageContent');
+    if (nav && content) {
+        content.style.paddingTop = nav.offsetHeight + 'px';
+    }
+}
+// Jalankan saat load dan saat shopControls/catBar ditampilkan/disembunyikan
+updateNavOffset();
+window.addEventListener('resize', updateNavOffset);
+// Override showPage agar update offset setiap ganti halaman
+const _origShowPage = showPage;
+window.showPage = function(page) {
+    _origShowPage(page);
+    // Tunda sedikit agar DOM sempat update display
+    setTimeout(updateNavOffset, 10);
+};
+</script>
+</body>
+</html>

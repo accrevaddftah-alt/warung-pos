@@ -4,8 +4,7 @@ const path = require('path');
 const fs   = require('fs');
 const { createClient } = require('@supabase/supabase-js');
 
-// ⚠️ Ganti dengan milik kamu!
-const SUPABASE_URL = 'https://smqybzogvcpjjldvutsq.supabase.co';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://smqybzogvcpjjldvutsq.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_KEY || '';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
